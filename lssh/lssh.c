@@ -106,26 +106,37 @@ int main(void)
         /* Add your code for implementing the shell's logic here */
         if (args_count > 0)
         {
-            int forkimus_maximus = fork();
-
-            if (forkimus_maximus < 0)
+            if (strcmp(args[0], "cd") == 0 && args_count == 2)
             {
-                printf("something bad happened, sire");
-                exit(1);
-            }  
-            else if (forkimus_maximus == 0)
-            {
-                // printf("the child is about to do its thing\n");
-                if (execvp(args[0], args) < 0)
+                if (chdir(args[1]) < 0)
                 {
-                    printf("No command called \"%s\" found.\n", args[0]);
-                    exit(2);
+                    perror((const char *)chdir);
                 }
+                continue;
             }
             else
             {
-                waitpid(forkimus_maximus, NULL, 0);
-                // printf("possible error? %s, and the parent arrived late..\n", strerror(errno));
+                int forkimus_maximus = fork();
+
+                if (forkimus_maximus < 0)
+                {
+                    printf("something bad happened, sire");
+                    exit(1);
+                }  
+                else if (forkimus_maximus == 0)
+                {
+                    // printf("the child is about to do its thing\n");
+                    if (execvp(args[0], args) < 0)
+                    {
+                        printf("No command called \"%s\" found.\n", args[0]);
+                        exit(2);
+                    }
+                }
+                else
+                {
+                    waitpid(forkimus_maximus, NULL, 0);
+                    // printf("possible error? %s, and the parent arrived late..\n", strerror(errno));
+                }
             }
         }
     }
