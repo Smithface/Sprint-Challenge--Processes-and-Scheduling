@@ -106,6 +106,13 @@ int main(void)
         /* Add your code for implementing the shell's logic here */
         if (args_count > 0)
         {
+            int willWait = 1;
+            if (strcmp(args[args_count - 1], "&") == 0)
+            {
+                args[args_count - 1] = NULL;
+                willWait = 0;
+            }
+
             if (strcmp(args[0], "cd") == 0 && args_count == 2)
             {
                 if (chdir(args[1]) < 0)
@@ -134,7 +141,7 @@ int main(void)
                 }
                 else
                 {
-                    waitpid(forkimus_maximus, NULL, 0);
+                    if (willWait) waitpid(forkimus_maximus, NULL, 0);
                     // printf("possible error? %s, and the parent arrived late..\n", strerror(errno));
                 }
             }
