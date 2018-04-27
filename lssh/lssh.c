@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/wait.h>
+#include <errno.h>
+
 
 #define PROMPT "lambda-shell$ "
 
@@ -101,9 +104,30 @@ int main(void)
         #endif
         
         /* Add your code for implementing the shell's logic here */
-        int fork = fork();
-        
-        
+        if (args_count > 0)
+        {
+            int forkimus_maximus = fork();
+
+            if (forkimus_maximus < 0)
+            {
+                printf("something bad happened, sire");
+                exit(1);
+            }  
+            else if (forkimus_maximus == 0)
+            {
+                // printf("the child is about to do its thing\n");
+                if (execvp(args[0], args) < 0)
+                {
+                    printf("No command called \"%s\" found.\n", args[0]);
+                    exit(2);
+                }
+            }
+            else
+            {
+                waitpid(forkimus_maximus, NULL, 0);
+                // printf("possible error? %s, and the parent arrived late..\n", strerror(errno));
+            }
+        }
     }
 
     return 0;
